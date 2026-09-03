@@ -1,18 +1,19 @@
-# Gorki Gym Trainer V13.2 Alpha
+# Gorki Gym Trainer V13.2 Sprint A - Exercise Library
 
-This is a starter pack for the Gorki Gym Trainer V13.2 Alpha application.
+This build pack provides the real Exercise Library feature for Sprint A.
 
 ## Features
 
-- Workout-first navigation: Home, Quick Workout, Workout, History, Progress
-- Exercise library entries with sample exercises
-- Local storage foundations for persisting workouts
-- V12-inspired mobile UI styling
+- Mobile-first exercise library
+- Image-driven exercise cards
+- Category filters: Chest, Back, Legs, Shoulders, Arms, Core
+- Searchable exercise library
+- Clickable exercise detail view with image, muscles trained, coaching tips placeholder
 
 ## Getting Started
 
-1. Clone or download the files to your project folder.
-2. Create an `assets/exercises` folder and populate it with exercise images (e.g., bench.png, back-squat.png) from your asset inventory.
+1. Clone or download these files to your project folder.
+2. Ensure you have an `Assets/exercises/` folder with exercise images (e.g., `bench.png`, `back-squat.png`, etc.).
 3. Open `index.html` in a mobile browser or emulator.
 
 ## File Structure
@@ -22,15 +23,21 @@ index.html
 style.css
 app.js
 README.md
-assets/
+Assets/
     exercises/
         bench.png
         back-squat.png
+        rdl.png
+        incline-press.png
+        row.png
+        pulldown.png
+        cable-fly.png
+        shoulder-press.png
+        ...
 ```
 
 ## Next Steps
 
 - Implement Quick Workout logic and Workout logging
-- Expand exercise library and details
+- Expand exercise library with more entries
 - Add History and Progress screen content with charts
-- Integrate Strava and other features in future builds

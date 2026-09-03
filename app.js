@@ -1,35 +1,88 @@
-// Basic navigation and localStorage foundations
-function showScreen(screen) {
-    const screens = ['home', 'quick-workout', 'workout', 'history', 'progress'];
-    screens.forEach(s => {
-        const el = document.getElementById(s + '-screen');
-        if (el) el.classList.remove('active');
-    });
-    const activeEl = document.getElementById(screen + '-screen');
-    if (activeEl) activeEl.classList.add('active');
-}
-
-// Initialize sample exercise library
-const exerciseLibrary = [
-    { name: 'Bench Press', image: 'assets/exercises/bench.png', muscles: ['Chest','Triceps'], last: '80kg x 8', best: '90kg x 5' },
-    { name: 'Squat', image: 'assets/exercises/back-squat.png', muscles: ['Legs'], last: '100kg x 5', best: '110kg x 3' }
+// Exercise Library Data
+const exercises = [
+    { id: 1, name: 'Bench Press', category: 'Chest', primary: ['Chest'], secondary: ['Triceps'], image: 'Assets/exercises/bench.png' },
+    { id: 2, name: 'Back Squat', category: 'Legs', primary: ['Legs'], secondary: ['Core'], image: 'Assets/exercises/back-squat.png' },
+    { id: 3, name: 'Romanian Deadlift (RDL)', category: 'Legs', primary: ['Legs'], secondary: ['Back'], image: 'Assets/exercises/rdl.png' },
+    { id: 4, name: 'Incline Press', category: 'Chest', primary: ['Upper Chest'], secondary: ['Triceps'], image: 'Assets/exercises/incline-press.png' },
+    { id: 5, name: 'Row', category: 'Back', primary: ['Back'], secondary: ['Biceps'], image: 'Assets/exercises/row.png' },
+    { id: 6, name: 'Pulldown', category: 'Back', primary: ['Back'], secondary: ['Biceps'], image: 'Assets/exercises/pulldown.png' },
+    { id: 7, name: 'Cable Fly', category: 'Chest', primary: ['Chest'], secondary: [], image: 'Assets/exercises/cable-fly.png' },
+    { id: 8, name: 'Shoulder Press', category: 'Shoulders', primary: ['Shoulders'], secondary: ['Triceps'], image: 'Assets/exercises/shoulder-press.png' }
 ];
 
-// Local storage functions
-function saveWorkout(workout) {
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
-    workouts.push(workout);
-    localStorage.setItem('workouts', JSON.stringify(workouts));
-}
-function loadWorkouts() {
-    return JSON.parse(localStorage.getItem('workouts') || '[]');
+let currentFilter = '';
+let currentSearch = '';
+
+function renderExercises() {
+    const listEl = document.getElementById('exercise-list');
+    listEl.innerHTML = '';
+    const filtered = exercises.filter(ex => {
+        const matchCategory = currentFilter === '' || ex.category === currentFilter;
+        const matchSearch = ex.name.toLowerCase().includes(currentSearch.toLowerCase());
+        return matchCategory && matchSearch;
+    });
+    if (filtered.length === 0) {
+        listEl.innerHTML = '<p>No exercises found.</p>';
+        return;
+    }
+    filtered.forEach(ex => {
+        const card = document.createElement('div');
+        card.className = 'exercise-card';
+        card.onclick = () => showDetail(ex.id);
+        const img = document.createElement('img');
+        img.src = ex.image;
+        img.alt = ex.name;
+        const info = document.createElement('div');
+        info.className = 'card-info';
+        const title = document.createElement('h3'); title.innerText = ex.name;
+        const muscles = document.createElement('p'); muscles.innerText = ex.primary.concat(ex.secondary.length ? [', '] : []).concat(ex.secondary).join(', ');
+        info.appendChild(title);
+        info.appendChild(muscles);
+        card.appendChild(img);
+        card.appendChild(info);
+        listEl.appendChild(card);
+    });
 }
 
-// Event listeners
+function setFilter(category) {
+    currentFilter = category;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.category === category);
+    });
+    applyFilters();
+}
+
+function applyFilters() {
+    currentSearch = document.getElementById('search-input').value;
+    renderExercises();
+}
+
+function showDetail(id) {
+    const ex = exercises.find(e => e.id === id);
+    if (!ex) return;
+    document.getElementById('detail-img').src = ex.image;
+    document.getElementById('detail-img').alt = ex.name;
+    document.getElementById('detail-name').innerText = ex.name;
+    document.getElementById('detail-muscles').innerText = 'Primary: ' + ex.primary.join(', ') + (ex.secondary.length ? '
+Secondary: ' + ex.secondary.join(', ') : '');
+    // Placeholder tips
+    document.getElementById('detail-tips').innerHTML = '<h3>Coaching Tips</h3><p>To be added...</p>';
+    showScreen('detail');
+}
+
+function showLibrary() {
+    showScreen('library');
+}
+
+function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    if (name === 'library') {
+        document.getElementById('library-section').classList.add('active');
+    } else if (name === 'detail') {
+        document.getElementById('detail-section').classList.add('active');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('start-quick-btn').addEventListener('click', () => showScreen('quick-workout'));
-    document.getElementById('continue-workout-btn').addEventListener('click', () => showScreen('workout'));
-    document.getElementById('view-progress-btn').addEventListener('click', () => showScreen('progress'));
-    // default screen
-    showScreen('home');
+    renderExercises();
 });
