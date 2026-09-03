@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gorki Gym Trainer V13.2 Alpha</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="home-screen" class="screen active">
+        <header><h1>Gorki Gym Trainer</h1></header>
+        <section class="content">
+            <button id="start-quick-btn">Quick Workout</button>
+            <button id="continue-workout-btn">Continue Workout</button>
+            <button id="view-progress-btn">View Progress</button>
+            <div id="exercise-library">
+                <h2>Exercise Library</h2>
+                <div class="exercise-card">
+                    <img src="assets/exercises/bench.png" alt="Bench Press" />
+                    <div class="card-info">
+                        <h3>Bench Press</h3>
+                        <p>Chest, Triceps</p>
+                    </div>
+                </div>
+                <!-- Add more cards as needed -->
+            </div>
+        </section>
+        <nav class="bottom-nav">
+            <button onclick="showScreen('home')">Home</button>
+            <button onclick="showScreen('quick-workout')">Quick</button>
+            <button onclick="showScreen('workout')">Workout</button>
+            <button onclick="showScreen('history')">History</button>
+            <button onclick="showScreen('progress')">Progress</button>
+        </nav>
+    </div>
+    
+    <div id="quick-workout-screen" class="screen">
+        <header><button onclick="showScreen('home')">Back</button><h1>Quick Workout</h1></header>
+        <section class="content">
+            <p>Select a muscle group or exercise</p>
+            <!-- Muscle map and search placeholder -->
+        </section>
+    </div>
+    
+    <div id="workout-screen" class="screen">
+        <header><h1>Workout</h1></header>
+        <section class="content">
+            <p>Logging workout...</p>
+            <!-- Workout logging UI -->
+        </section>
+    </div>
+    
+    <div id="history-screen" class="screen">
+        <header><h1>History</h1></header>
+        <section class="content">
+            <p>Previous workouts</p>
+            <!-- History list -->
+        </section>
+    </div>
+    
+    <div id="progress-screen" class="screen">
+        <header><h1>Progress</h1></header>
+        <section class="content">
+            <p>Weight, volume, PRs</p>
+            <!-- Progress charts -->
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
