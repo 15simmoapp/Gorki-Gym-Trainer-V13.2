@@ -1,24 +1,17 @@
-/* Basic mobile-first styling */
-body { margin: 0; font-family: Arial, sans-serif; background-color: #f4f6f8; color: #333; }
-.app-header { background: #007bff; color: #fff; padding: 15px; text-align: center; position: sticky; top: 0; z-index:10; }
-.app-header h1 { margin: 0; font-size: 1.4rem; }
+/* Basic styles for GGT Sprint B */
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+header { background: #007bff; color: white; padding: 10px; text-align: center; }
+nav { display: flex; justify-content: center; background: #e9ecef; padding: 5px; }
+av button { margin: 0 5px; padding: 5px 10px; }
 main { padding: 10px; }
-.controls { margin-bottom: 10px; }
-#search-input { width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; }
-.filters { margin: 10px 0; display: flex; flex-wrap: wrap; gap: 5px; }
-.filter-btn { padding: 6px 10px; border: none; border-radius: 4px; background:#e0e0e0; cursor: pointer; font-size: 0.9rem; }
-.filter-btn.active, .filter-btn:hover { background: #007bff; color: #fff; }
-.exercise-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
-.exercise-card { display: flex; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; }
-.exercise-card img { width: 80px; height: 80px; object-fit: cover; }
-.card-info { padding: 10px; }
-.card-info h3 { margin: 0 0 5px; font-size: 1.1rem; }
-.card-info p { margin: 0; font-size: 0.9rem; color: #555; }
-.screen { display: none; }
-.screen.active { display: block; }
-.back-btn { background: none; border: none; color: #007bff; font-size: 1rem; margin-bottom: 10px; cursor: pointer; }
-.exercise-detail-card { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-.exercise-detail-card img { width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto 10px; }
-@media(min-width: 600px) {
-    .exercise-list { grid-template-columns: 1fr 1fr; }
-}
+.filter-btn { margin: 2px; padding: 5px 10px; }
+.exercise-card { display: flex; align-items: center; border: 1px solid #ccc; padding: 5px; margin: 5px 0; border-radius: 4px; }
+.exercise-card img { width: 60px; height: 60px; object-fit: cover; margin-right: 10px; }
+.exercise-info { flex: 1; }
+.exercise-info h3 { margin: 0 0 5px 0; }
+.exercise-info p { margin: 0; }
+.screen { }
+#workout-exercises .workout-exercise { border: 1px solid #ccc; padding: 5px; margin: 5px 0; }
+.workout-exercise h3 { margin: 0; }
+.set-row { display: flex; align-items: center; margin: 5px 0; }
+.set-row input { margin-right: 5px; width: 60px; }

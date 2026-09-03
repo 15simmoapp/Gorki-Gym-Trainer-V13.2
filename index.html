@@ -1,45 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gorki Gym Trainer V13.2 - Sprint A</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gorki Gym Trainer</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header class="app-header">
+    <header>
         <h1>Gorki Gym Trainer</h1>
     </header>
+    <nav>
+        <button id="nav-library" onclick="showLibrary()">Library</button>
+        <button id="nav-workout" onclick="showWorkout()">Quick Workout</button>
+    </nav>
     <main>
-        <section id="library-section" class="screen active">
-            <div class="controls">
-                <input type="text" id="search-input" placeholder="Search exercises..." oninput="applyFilters()">
-                <div id="category-filters" class="filters">
-                    <button onclick="setFilter('')" class="filter-btn active" data-category="">All</button>
-                    <button onclick="setFilter('Chest')" class="filter-btn" data-category="Chest">Chest</button>
-                    <button onclick="setFilter('Back')" class="filter-btn" data-category="Back">Back</button>
-                    <button onclick="setFilter('Legs')" class="filter-btn" data-category="Legs">Legs</button>
-                    <button onclick="setFilter('Shoulders')" class="filter-btn" data-category="Shoulders">Shoulders</button>
-                    <button onclick="setFilter('Arms')" class="filter-btn" data-category="Arms">Arms</button>
-                    <button onclick="setFilter('Core')" class="filter-btn" data-category="Core">Core</button>
-                </div>
+        <div id="library-screen" class="screen">
+            <input type="text" id="search-input" placeholder="Search exercises..." oninput="applyFilters()" />
+            <div id="filter-buttons">
+                <button onclick="setFilter('All')" class="filter-btn" id="filter-All">All</button>
+                <button onclick="setFilter('Chest')" class="filter-btn" id="filter-Chest">Chest</button>
+                <button onclick="setFilter('Back')" class="filter-btn" id="filter-Back">Back</button>
+                <button onclick="setFilter('Legs')" class="filter-btn" id="filter-Legs">Legs</button>
+                <button onclick="setFilter('Shoulders')" class="filter-btn" id="filter-Shoulders">Shoulders</button>
+                <button onclick="setFilter('Arms')" class="filter-btn" id="filter-Arms">Arms</button>
+                <button onclick="setFilter('Core')" class="filter-btn" id="filter-Core">Core</button>
             </div>
-            <div id="exercise-list" class="exercise-list">
-                <!-- Exercise cards will be inserted here -->
+            <div id="exercise-list"></div>
+        </div>
+        <div id="workout-screen" class="screen" style="display:none;">
+            <h2>Quick Workout</h2>
+            <div>
+                <label for="select-exercise">Add Exercise:</label>
+                <select id="select-exercise">
+                    <option value="">Choose...</option>
+                </select>
+                <button onclick="addExerciseToWorkout()">Add</button>
             </div>
-        </section>
-        <section id="detail-section" class="screen">
-            <button id="back-btn" onclick="showLibrary()" class="back-btn">&larr; Back to Library</button>
-            <div class="exercise-detail-card">
-                <img id="detail-img" src="" alt="Exercise Image">
-                <h2 id="detail-name"></h2>
-                <p id="detail-muscles"></p>
-                <div id="detail-tips">
-                    <h3>Coaching Tips</h3>
-                    <p>To be added...</p>
-                </div>
-            </div>
-        </section>
+            <div id="workout-exercises"></div>
+            <button onclick="saveWorkout()">Save Workout</button>
+            <div id="workout-summary"></div>
+        </div>
     </main>
     <script src="app.js"></script>
 </body>

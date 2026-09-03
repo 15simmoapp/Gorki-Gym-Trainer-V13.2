@@ -8,84 +8,150 @@ const exercises = [
     { id: 6, name: 'Pulldown', category: 'Back', primary: ['Back'], secondary: ['Biceps'], image: 'Assets/exercises/pulldown.png' },
     { id: 7, name: 'Cable Fly', category: 'Chest', primary: ['Chest'], secondary: [], image: 'Assets/exercises/cable-fly.png' },
     { id: 8, name: 'Shoulder Press', category: 'Shoulders', primary: ['Shoulders'], secondary: ['Triceps'], image: 'Assets/exercises/shoulder-press.png' }
+    // ... extend as needed
 ];
 
-let currentFilter = '';
+let currentFilter = 'All';
 let currentSearch = '';
-
-function renderExercises() {
-    const listEl = document.getElementById('exercise-list');
-    listEl.innerHTML = '';
-    const filtered = exercises.filter(ex => {
-        const matchCategory = currentFilter === '' || ex.category === currentFilter;
-        const matchSearch = ex.name.toLowerCase().includes(currentSearch.toLowerCase());
-        return matchCategory && matchSearch;
-    });
-    if (filtered.length === 0) {
-        listEl.innerHTML = '<p>No exercises found.</p>';
-        return;
-    }
-    filtered.forEach(ex => {
-        const card = document.createElement('div');
-        card.className = 'exercise-card';
-        card.onclick = () => showDetail(ex.id);
-        const img = document.createElement('img');
-        img.src = ex.image;
-        img.alt = ex.name;
-        const info = document.createElement('div');
-        info.className = 'card-info';
-        const title = document.createElement('h3'); title.innerText = ex.name;
-        const muscles = document.createElement('p'); muscles.innerText = ex.primary.concat(ex.secondary.length ? [', '] : []).concat(ex.secondary).join(', ');
-        info.appendChild(title);
-        info.appendChild(muscles);
-        card.appendChild(img);
-        card.appendChild(info);
-        listEl.appendChild(card);
-    });
-}
 
 function setFilter(category) {
     currentFilter = category;
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.category === category);
-    });
     applyFilters();
 }
 
 function applyFilters() {
-    currentSearch = document.getElementById('search-input').value;
+    currentSearch = document.getElementById('search-input').value.toLowerCase();
     renderExercises();
 }
 
-function showDetail(id) {
-    const ex = exercises.find(e => e.id === id);
-    if (!ex) return;
-    document.getElementById('detail-img').src = ex.image;
-    document.getElementById('detail-img').alt = ex.name;
-    document.getElementById('detail-name').innerText = ex.name;
-        let muscleText = 'Primary: ' + ex.primary.join(', ');
-        if (ex.secondary.length) {
-            muscleText += ' | Secondary: ' + ex.secondary.join(', ');
+function renderExercises() {
+    const list = document.getElementById('exercise-list');
+    list.innerHTML = '';
+    exercises.forEach(ex => {
+        if ((currentFilter === 'All' || ex.category === currentFilter) &&
+            ex.name.toLowerCase().includes(currentSearch)) {
+            const card = document.createElement('div');
+            card.className = 'exercise-card';
+            card.onclick = () => addExerciseToWorkout(ex.id);
+            const img = document.createElement('img');
+            img.src = ex.image;
+            img.alt = ex.name;
+            card.appendChild(img);
+            const info = document.createElement('div');
+            info.className = 'exercise-info';
+            const title = document.createElement('h3');
+            title.innerText = ex.name;
+            info.appendChild(title);
+            const details = document.createElement('p');
+            details.innerText = ex.category;
+            info.appendChild(details);
+            card.appendChild(info);
+            list.appendChild(card);
         }
-        document.getElementById('detail-muscles').innerText = muscleText;
-    // Placeholder tips
-    document.getElementById('detail-tips').innerHTML = '<h3>Coaching Tips</h3><p>To be added...</p>';
-    showScreen('detail');
+    });
 }
 
 function showLibrary() {
-    showScreen('library');
+    document.getElementById('library-screen').style.display = '';
+    document.getElementById('workout-screen').style.display = 'none';
 }
 
-function showScreen(name) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    if (name === 'library') {
-        document.getElementById('library-section').classList.add('active');
-    } else if (name === 'detail') {
-        document.getElementById('detail-section').classList.add('active');
+function showWorkout() {
+    document.getElementById('library-screen').style.display = 'none';
+    document.getElementById('workout-screen').style.display = '';
+    renderWorkout();
+}
+
+// Workout logic
+let workout = [];
+
+function populateExerciseSelect() {
+    const sel = document.getElementById('select-exercise');
+    sel.innerHTML = '<option value="">Choose...</option>';
+    exercises.forEach(ex => {
+        const o = document.createElement('option');
+        o.value = ex.id;
+        o.innerText = ex.name;
+        sel.appendChild(o);
+    });
+}
+
+function addExerciseToWorkout(id) {
+    let exId = id;
+    if (!exId) {
+        const sel = document.getElementById('select-exercise');
+        exId = parseInt(sel.value);
+        if (!exId) return;
     }
+    if (workout.find(w => w.id === exId)) return;
+    const ex = exercises.find(e => e.id === exId);
+    if (!ex) return;
+    workout.push({ id: exId, name: ex.name, sets: [] });
+    renderWorkout();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderExercises();
-});
+function renderWorkout() {
+    populateExerciseSelect();
+    const container = document.getElementById('workout-exercises');
+    container.innerHTML = '';
+    workout.forEach((w, wi) => {
+        const div = document.createElement('div');
+        div.className = 'workout-exercise';
+        const title = document.createElement('h3');
+        title.innerText = w.name;
+        div.appendChild(title);
+        // Sets
+        w.sets.forEach((s, si) => {
+            const row = document.createElement('div');
+            row.className = 'set-row';
+            const weight = document.createElement('input');
+            weight.type = 'number';
+            weight.value = s.weight;
+            weight.placeholder = 'Weight';
+            weight.onchange = (e) => { w.sets[si].weight = e.target.value; };
+            const reps = document.createElement('input');
+            reps.type = 'number';
+            reps.value = s.reps;
+            reps.placeholder = 'Reps';
+            reps.onchange = (e) => { w.sets[si].reps = e.target.value; };
+            const rpe = document.createElement('input');
+            rpe.type = 'number';
+            rpe.value = s.rpe;
+            rpe.placeholder = 'RPE';
+            rpe.onchange = (e) => { w.sets[si].rpe = e.target.value; };
+            const remove = document.createElement('button');
+            remove.innerText = 'Remove Set';
+            remove.onclick = () => { w.sets.splice(si,1); renderWorkout(); };
+            row.appendChild(weight);
+            row.appendChild(reps);
+            row.appendChild(rpe);
+            row.appendChild(remove);
+            div.appendChild(row);
+        });
+        const addSetBtn = document.createElement('button');
+        addSetBtn.innerText = 'Add Set';
+        addSetBtn.onclick = () => { w.sets.push({ weight:'', reps:'', rpe:'' }); renderWorkout(); };
+        div.appendChild(addSetBtn);
+        // Remove exercise
+        const removeExBtn = document.createElement('button');
+        removeExBtn.innerText = 'Remove Exercise';
+        removeExBtn.onclick = () => { workout.splice(wi,1); renderWorkout(); };
+        div.appendChild(removeExBtn);
+        container.appendChild(div);
+    });
+}
+
+function saveWorkout() {
+    const summaryDiv = document.getElementById('workout-summary');
+    const saved = JSON.parse(localStorage.getItem('workouts') || '[]');
+    saved.push({ date: new Date().toISOString(), exercises: JSON.parse(JSON.stringify(workout)) });
+    localStorage.setItem('workouts', JSON.stringify(saved));
+    summaryDiv.innerText = 'Workout saved (' + saved.length + ').';
+    // reset
+    workout = [];
+    renderWorkout();
+}
+
+// Initialize
+applyFilters();
+populateExerciseSelect();
