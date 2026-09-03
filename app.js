@@ -63,8 +63,11 @@ function showDetail(id) {
     document.getElementById('detail-img').src = ex.image;
     document.getElementById('detail-img').alt = ex.name;
     document.getElementById('detail-name').innerText = ex.name;
-    document.getElementById('detail-muscles').innerText = 'Primary: ' + ex.primary.join(', ') + (ex.secondary.length ? '
-Secondary: ' + ex.secondary.join(', ') : '');
+        let muscleText = 'Primary: ' + ex.primary.join(', ');
+        if (ex.secondary.length) {
+            muscleText += ' | Secondary: ' + ex.secondary.join(', ');
+        }
+        document.getElementById('detail-muscles').innerText = muscleText;
     // Placeholder tips
     document.getElementById('detail-tips').innerHTML = '<h3>Coaching Tips</h3><p>To be added...</p>';
     showScreen('detail');
