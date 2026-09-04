@@ -325,3 +325,47 @@ function renderHome() {
 showHome();
 applyFilters();
 populateExerciseSelect();
+
+// Favourites and filtering enhancements override
+function renderExercises() {
+    const list = document.getElementById('exercise-list');
+    list.innerHTML = '';
+    exercises.forEach(ex => {
+        // Default favourite property if undefined
+        if (ex.favourite === undefined) ex.favourite = false;
+        const nameFilter = currentSearch;
+        // Filtering logic: All, category, or favourites
+        const matchesCategory = (currentFilter === 'All') || (ex.category === currentFilter);
+        const matchesFavourites = (currentFilter === 'Favourites' && ex.favourite);
+        const matchesFilter = matchesCategory || matchesFavourites;
+        if (matchesFilter && ex.name.toLowerCase().includes(nameFilter)) {
+            const card = document.createElement('div');
+            card.className = 'exercise-card';
+            card.onclick = () => { addExerciseToWorkout(ex.id); showWorkout(); };
+            const img = document.createElement('img');
+            img.src = ex.image;
+            img.alt = ex.name;
+            card.appendChild(img);
+            const info = document.createElement('div');
+            info.className = 'exercise-info';
+            const title = document.createElement('h3');
+            title.innerText = ex.name;
+            info.appendChild(title);
+            // Add favourite toggle button
+            const favBtn = document.createElement('button');
+            favBtn.className = 'fav-btn';
+            favBtn.innerText = ex.favourite ? '★' : '☆';
+            favBtn.onclick = (ev) => { ev.stopPropagation(); ex.favourite = !ex.favourite; renderExercises(); };
+            info.appendChild(favBtn);
+            const details = document.createElement('p');
+            details.innerText = ex.category;
+            info.appendChild(details);
+            card.appendChild(info);
+            list.appendChild(card);
+        }
+    });
+}
+function applyFilters() {
+    currentSearch = document.getElementById('search-input').value.toLowerCase();
+    renderExercises();
+}

@@ -1,0 +1,3 @@
+Sprint E Step 4 deployment pack updated for expanded exercise registry (43 items) with favourites support and filtering.
+exerciseRegistry.js replaced with expanded list including 43 exercises, each with 'favourite' property initialised to false to support favourites toggling.
+app.js, index.html, and style.css are carried over from the Sprint E Step 4 pack, retaining favourites filtering functionality.
