@@ -32,7 +32,7 @@ function renderExercises() {
             ex.name.toLowerCase().includes(currentSearch)) {
             const card = document.createElement('div');
             card.className = 'exercise-card';
-            card.onclick = () => addExerciseToWorkout(ex.id);
+            card.onclick = () => { addExerciseToWorkout(ex.id); showWorkout(); };
             const img = document.createElement('img');
             img.src = ex.image;
             img.alt = ex.name;
@@ -62,6 +62,8 @@ function showWorkout() {
     document.getElementById('workout-screen').style.display = '';
     document.getElementById('history-screen').style.display = 'none';
     document.getElementById('detail-screen').style.display = 'none';
+    // ensure history list is hidden when workout is shown
+    document.getElementById('history-list').style.display = '';
     renderWorkout();
 }
 
@@ -69,12 +71,14 @@ function showHistory() {
     document.getElementById('library-screen').style.display = 'none';
     document.getElementById('workout-screen').style.display = 'none';
     document.getElementById('history-screen').style.display = '';
+    document.getElementById('history-list').style.display = '';
     document.getElementById('detail-screen').style.display = 'none';
     renderHistory();
 }
 
 function showDetail(index) {
     document.getElementById('detail-screen').style.display = '';
+    document.getElementById('history-list').style.display = 'none';
     renderDetail(index);
 }
 
@@ -102,7 +106,7 @@ function addExerciseToWorkout(id) {
     if (workout.find(w => w.id === exId)) return;
     const ex = exercises.find(e => e.id === exId);
     if (!ex) return;
-    workout.push({ id: exId, name: ex.name, sets: [] });
+    workout.push({ id: exId, name: ex.name, image: ex.image, sets: [] });
     renderWorkout();
 }
 
@@ -112,8 +116,13 @@ function getLastPerformance(exerciseId) {
         const wk = data[i];
         for (let ex of wk.exercises) {
             if (ex.id === exerciseId && ex.sets && ex.sets.length) {
-                const s = ex.sets[ex.sets.length - 1];
-                return { weight: s.weight, reps: s.reps, rpe: s.rpe };
+                // find last complete set (weight and reps non-empty)
+                for (let si = ex.sets.length - 1; si >= 0; si--) {
+                    const s = ex.sets[si];
+                    if (s.weight && s.reps) {
+                        return { weight: s.weight, reps: s.reps, rpe: s.rpe };
+                    }
+                }
             }
         }
     }
@@ -127,6 +136,11 @@ function renderWorkout() {
     workout.forEach((w, wi) => {
         const div = document.createElement('div');
         div.className = 'workout-exercise';
+        // Add image
+        const img = document.createElement('img');
+        img.src = w.image;
+        img.alt = w.name;
+        div.appendChild(img);
         const title = document.createElement('h3');
         title.innerText = w.name;
         div.appendChild(title);
@@ -250,9 +264,9 @@ function getExerciseHistory(exerciseId) {
             history.push({ date: wk.date, sets: JSON.parse(JSON.stringify(ex.sets)) });
         }
     });
-    return history; // array of {date, sets[]}
+    return history;
 }
 
-// Initialize
+// Initialise
 applyFilters();
 populateExerciseSelect();

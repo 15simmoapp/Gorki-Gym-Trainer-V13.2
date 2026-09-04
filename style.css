@@ -11,8 +11,10 @@ main { padding: 10px; }
 .exercise-info h3 { margin: 0 0 5px 0; }
 .exercise-info p { margin: 0; }
 .screen { }
-#workout-exercises .workout-exercise { border: 1px solid #ccc; padding: 5px; margin: 5px 0; }
+#workout-exercises .workout-exercise { border: 1px solid #ccc; padding: 5px; margin: 5px 0; overflow:auto; }
 .workout-exercise h3 { margin: 0; }
 .set-row { display: flex; align-items: center; margin: 5px 0; }
 .set-row input { margin-right: 5px; width: 60px; }
 .history-item { cursor: pointer; margin: 5px 0; padding: 5px; border: 1px solid #ccc; }
+/* CSS for workout exercise images */
+.workout-exercise img { width: 60px; height: 60px; object-fit: cover; margin-right: 10px; float: left; }
