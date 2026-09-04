@@ -11,12 +11,32 @@
         <h1>Gorki Gym Trainer</h1>
     </header>
     <nav>
+        <button id="nav-home" onclick="showHome()">Home</button>
         <button id="nav-library" onclick="showLibrary()">Library</button>
         <button id="nav-workout" onclick="showWorkout()">Quick Workout</button>
         <button id="nav-history" onclick="showHistory()">History</button>
     </nav>
     <main>
-        <div id="library-screen" class="screen">
+        <div id="home-screen" class="screen">
+            <h2>Home Dashboard</h2>
+            <div id="last-session-summary">
+                <h3>Last Session Summary</h3>
+                <div id="last-session-content">No session data.</div>
+            </div>
+            <div id="recent-workouts">
+                <h3>Recent Workouts</h3>
+                <div id="recent-list">No recent workouts.</div>
+            </div>
+            <div id="stats">
+                <h3>Training Stats</h3>
+                <div id="stats-content">Stats will appear here.</div>
+            </div>
+            <div id="favourites">
+                <h3>Favourite Exercises</h3>
+                <div id="favourites-list">No favourites yet.</div>
+            </div>
+        </div>
+        <div id="library-screen" class="screen" style="display:none;">
             <input type="text" id="search-input" placeholder="Search exercises..." oninput="applyFilters()" />
             <div id="filter-buttons">
                 <button onclick="setFilter('All')" class="filter-btn" id="filter-All">All</button>
@@ -33,9 +53,7 @@
             <h2>Quick Workout</h2>
             <div>
                 <label for="select-exercise">Add Exercise:</label>
-                <select id="select-exercise">
-                    <option value="">Choose...</option>
-                </select>
+                <select id="select-exercise"></select>
                 <button onclick="addExerciseToWorkout()">Add</button>
             </div>
             <div id="workout-exercises"></div>

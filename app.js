@@ -51,23 +51,33 @@ function renderExercises() {
     });
 }
 
+function showHome() {
+    document.getElementById('home-screen').style.display = '';
+    document.getElementById('library-screen').style.display = 'none';
+    document.getElementById('workout-screen').style.display = 'none';
+    document.getElementById('history-screen').style.display = 'none';
+    document.getElementById('detail-screen').style.display = 'none';
+    renderHome();
+}
+
 function showLibrary() {
+    document.getElementById('home-screen').style.display = 'none';
     document.getElementById('library-screen').style.display = '';
     document.getElementById('workout-screen').style.display = 'none';
     document.getElementById('history-screen').style.display = 'none';
 }
 
 function showWorkout() {
+    document.getElementById('home-screen').style.display = 'none';
     document.getElementById('library-screen').style.display = 'none';
     document.getElementById('workout-screen').style.display = '';
     document.getElementById('history-screen').style.display = 'none';
     document.getElementById('detail-screen').style.display = 'none';
-    // ensure history list is hidden when workout is shown
-    document.getElementById('history-list').style.display = '';
     renderWorkout();
 }
 
 function showHistory() {
+    document.getElementById('home-screen').style.display = 'none';
     document.getElementById('library-screen').style.display = 'none';
     document.getElementById('workout-screen').style.display = 'none';
     document.getElementById('history-screen').style.display = '';
@@ -116,7 +126,6 @@ function getLastPerformance(exerciseId) {
         const wk = data[i];
         for (let ex of wk.exercises) {
             if (ex.id === exerciseId && ex.sets && ex.sets.length) {
-                // find last complete set (weight and reps non-empty)
                 for (let si = ex.sets.length - 1; si >= 0; si--) {
                     const s = ex.sets[si];
                     if (s.weight && s.reps) {
@@ -136,7 +145,6 @@ function renderWorkout() {
     workout.forEach((w, wi) => {
         const div = document.createElement('div');
         div.className = 'workout-exercise';
-        // Add image
         const img = document.createElement('img');
         img.src = w.image;
         img.alt = w.name;
@@ -144,14 +152,12 @@ function renderWorkout() {
         const title = document.createElement('h3');
         title.innerText = w.name;
         div.appendChild(title);
-        // Previous performance
         const last = getLastPerformance(w.id);
         if (last) {
             const prev = document.createElement('p');
             prev.innerText = `Last: ${last.weight}kg x ${last.reps} @ ${last.rpe}`;
             div.appendChild(prev);
         }
-        // Sets
         w.sets.forEach((s, si) => {
             const row = document.createElement('div');
             row.className = 'set-row';
@@ -183,7 +189,6 @@ function renderWorkout() {
         addSetBtn.innerText = 'Add Set';
         addSetBtn.onclick = () => { w.sets.push({ weight:'', reps:'', rpe:'' }); renderWorkout(); };
         div.appendChild(addSetBtn);
-        // Remove exercise
         const removeExBtn = document.createElement('button');
         removeExBtn.innerText = 'Remove Exercise';
         removeExBtn.onclick = () => { workout.splice(wi,1); renderWorkout(); };
@@ -237,7 +242,6 @@ function renderDetail(index) {
                 p.innerText = `Set ${si+1}: ${s.weight}kg x ${s.reps} @ ${s.rpe}`;
                 exDiv.appendChild(p);
             });
-            // Exercise history summary
             const hist = getExerciseHistory(ex.id);
             if (hist && hist.length) {
                 const hTitle = document.createElement('p');
@@ -246,7 +250,7 @@ function renderDetail(index) {
                 hist.forEach(hs => {
                     const hp = document.createElement('p');
                     const dt = new Date(hs.date).toLocaleDateString();
-                    hp.innerText = dt + ': ' + hs.sets.map((s, idx) => `${s.weight}kg x ${s.reps} @ ${s.rpe}`).join(', ');
+                    hp.innerText = dt + ': ' + hs.sets.map(s => `${s.weight}kg x ${s.reps} @ ${s.rpe}`).join(', ');
                     exDiv.appendChild(hp);
                 });
             }
@@ -267,6 +271,46 @@ function getExerciseHistory(exerciseId) {
     return history;
 }
 
-// Initialise
+// Home Dashboard logic
+function renderHome() {
+    // Last session summary
+    const lastDiv = document.getElementById('last-session-content');
+    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    if (data.length === 0) {
+        lastDiv.innerText = 'No sessions saved.';
+    } else {
+        const last = data[data.length-1];
+        const dateStr = new Date(last.date).toLocaleString();
+        lastDiv.innerHTML = `<strong>${dateStr}</strong><br/>`;
+        last.exercises.forEach(ex => {
+            lastDiv.innerHTML += `${ex.name}: `;
+            ex.sets.forEach((s, idx) => {
+                lastDiv.innerHTML += `Set ${idx+1}: ${s.weight}kg x ${s.reps} @ ${s.rpe}<br/>`;
+            });
+        });
+    }
+    // Recent workouts
+    const recentDiv = document.getElementById('recent-list');
+    recentDiv.innerHTML = '';
+    if (data.length === 0) {
+        recentDiv.innerText = 'No recent workouts.';
+    } else {
+        // show last 3
+        const recent = data.slice(-3).reverse();
+        recent.forEach(wk => {
+            const item = document.createElement('div');
+            const date = new Date(wk.date).toLocaleString();
+            item.innerText = date + ' - ' + wk.exercises.length + ' exercises';
+            recentDiv.appendChild(item);
+        });
+    }
+    // Stats placeholder
+    document.getElementById('stats-content').innerText = 'Training stats coming soon.';
+    // Favourites placeholder
+    document.getElementById('favourites-list').innerText = 'Favourite exercises feature TBD.';
+}
+
+// Initialise on load
+showHome();
 applyFilters();
 populateExerciseSelect();
