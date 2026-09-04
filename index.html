@@ -13,6 +13,7 @@
     <nav>
         <button id="nav-library" onclick="showLibrary()">Library</button>
         <button id="nav-workout" onclick="showWorkout()">Quick Workout</button>
+        <button id="nav-history" onclick="showHistory()">History</button>
     </nav>
     <main>
         <div id="library-screen" class="screen">
@@ -40,6 +41,14 @@
             <div id="workout-exercises"></div>
             <button onclick="saveWorkout()">Save Workout</button>
             <div id="workout-summary"></div>
+        </div>
+        <div id="history-screen" class="screen" style="display:none;">
+            <h2>Workout History</h2>
+            <div id="history-list"></div>
+            <div id="detail-screen" style="display:none;">
+                <button onclick="showHistory()">Back to History</button>
+                <div id="detail-content"></div>
+            </div>
         </div>
     </main>
     <script src="app.js"></script>

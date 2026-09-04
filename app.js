@@ -54,12 +54,28 @@ function renderExercises() {
 function showLibrary() {
     document.getElementById('library-screen').style.display = '';
     document.getElementById('workout-screen').style.display = 'none';
+    document.getElementById('history-screen').style.display = 'none';
 }
 
 function showWorkout() {
     document.getElementById('library-screen').style.display = 'none';
     document.getElementById('workout-screen').style.display = '';
+    document.getElementById('history-screen').style.display = 'none';
+    document.getElementById('detail-screen').style.display = 'none';
     renderWorkout();
+}
+
+function showHistory() {
+    document.getElementById('library-screen').style.display = 'none';
+    document.getElementById('workout-screen').style.display = 'none';
+    document.getElementById('history-screen').style.display = '';
+    document.getElementById('detail-screen').style.display = 'none';
+    renderHistory();
+}
+
+function showDetail(index) {
+    document.getElementById('detail-screen').style.display = '';
+    renderDetail(index);
 }
 
 // Workout logic
@@ -90,6 +106,20 @@ function addExerciseToWorkout(id) {
     renderWorkout();
 }
 
+function getLastPerformance(exerciseId) {
+    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    for (let i = data.length - 1; i >= 0; i--) {
+        const wk = data[i];
+        for (let ex of wk.exercises) {
+            if (ex.id === exerciseId && ex.sets && ex.sets.length) {
+                const s = ex.sets[ex.sets.length - 1];
+                return { weight: s.weight, reps: s.reps, rpe: s.rpe };
+            }
+        }
+    }
+    return null;
+}
+
 function renderWorkout() {
     populateExerciseSelect();
     const container = document.getElementById('workout-exercises');
@@ -100,6 +130,13 @@ function renderWorkout() {
         const title = document.createElement('h3');
         title.innerText = w.name;
         div.appendChild(title);
+        // Previous performance
+        const last = getLastPerformance(w.id);
+        if (last) {
+            const prev = document.createElement('p');
+            prev.innerText = `Last: ${last.weight}kg x ${last.reps} @ ${last.rpe}`;
+            div.appendChild(prev);
+        }
         // Sets
         w.sets.forEach((s, si) => {
             const row = document.createElement('div');
@@ -147,9 +184,73 @@ function saveWorkout() {
     saved.push({ date: new Date().toISOString(), exercises: JSON.parse(JSON.stringify(workout)) });
     localStorage.setItem('workouts', JSON.stringify(saved));
     summaryDiv.innerText = 'Workout saved (' + saved.length + ').';
-    // reset
     workout = [];
     renderWorkout();
+}
+
+// History and Detail logic
+function renderHistory() {
+    const listDiv = document.getElementById('history-list');
+    listDiv.innerHTML = '';
+    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    data.forEach((wk, i) => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        const date = new Date(wk.date).toLocaleString();
+        item.innerText = date + ' - ' + wk.exercises.length + ' exercises';
+        item.onclick = () => showDetail(i);
+        listDiv.appendChild(item);
+    });
+}
+
+function renderDetail(index) {
+    const content = document.getElementById('detail-content');
+    content.innerHTML = '';
+    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    if (data[index]) {
+        const wk = data[index];
+        const date = document.createElement('h3');
+        date.innerText = 'Workout on ' + new Date(wk.date).toLocaleString();
+        content.appendChild(date);
+        wk.exercises.forEach(ex => {
+            const exDiv = document.createElement('div');
+            exDiv.className = 'workout-exercise';
+            const title = document.createElement('h4');
+            title.innerText = ex.name;
+            exDiv.appendChild(title);
+            ex.sets.forEach((s, si) => {
+                const p = document.createElement('p');
+                p.innerText = `Set ${si+1}: ${s.weight}kg x ${s.reps} @ ${s.rpe}`;
+                exDiv.appendChild(p);
+            });
+            // Exercise history summary
+            const hist = getExerciseHistory(ex.id);
+            if (hist && hist.length) {
+                const hTitle = document.createElement('p');
+                hTitle.innerText = 'Exercise history:';
+                exDiv.appendChild(hTitle);
+                hist.forEach(hs => {
+                    const hp = document.createElement('p');
+                    const dt = new Date(hs.date).toLocaleDateString();
+                    hp.innerText = dt + ': ' + hs.sets.map((s, idx) => `${s.weight}kg x ${s.reps} @ ${s.rpe}`).join(', ');
+                    exDiv.appendChild(hp);
+                });
+            }
+            content.appendChild(exDiv);
+        });
+    }
+}
+
+function getExerciseHistory(exerciseId) {
+    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let history = [];
+    data.forEach(wk => {
+        const ex = wk.exercises.find(e => e.id === exerciseId);
+        if (ex && ex.sets && ex.sets.length) {
+            history.push({ date: wk.date, sets: JSON.parse(JSON.stringify(ex.sets)) });
+        }
+    });
+    return history; // array of {date, sets[]}
 }
 
 // Initialize
