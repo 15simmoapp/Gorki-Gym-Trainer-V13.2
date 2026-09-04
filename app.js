@@ -121,7 +121,13 @@ function addExerciseToWorkout(id) {
 }
 
 function getLastPerformance(exerciseId) {
-    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    const raw = localStorage.getItem('workouts') || localStorage.workouts;
+    let data = [];
+    try {
+        data = JSON.parse(raw) || [];
+    } catch(e) {
+        data = [];
+    }
     for (let i = data.length - 1; i >= 0; i--) {
         const wk = data[i];
         for (let ex of wk.exercises) {
@@ -199,7 +205,13 @@ function renderWorkout() {
 
 function saveWorkout() {
     const summaryDiv = document.getElementById('workout-summary');
-    const saved = JSON.parse(localStorage.getItem('workouts') || '[]');
+    const rawSaved = localStorage.getItem('workouts') || localStorage.workouts;
+    let saved = [];
+    try {
+        saved = JSON.parse(rawSaved) || [];
+    } catch(e) {
+        saved = [];
+    }
     saved.push({ date: new Date().toISOString(), exercises: JSON.parse(JSON.stringify(workout)) });
     localStorage.setItem('workouts', JSON.stringify(saved));
     summaryDiv.innerText = 'Workout saved (' + saved.length + ').';
@@ -211,7 +223,13 @@ function saveWorkout() {
 function renderHistory() {
     const listDiv = document.getElementById('history-list');
     listDiv.innerHTML = '';
-    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    const raw = localStorage.getItem('workouts') || localStorage.workouts;
+    let data = [];
+    try {
+        data = JSON.parse(raw) || [];
+    } catch(e) {
+        data = [];
+    }
     data.forEach((wk, i) => {
         const item = document.createElement('div');
         item.className = 'history-item';
@@ -225,7 +243,11 @@ function renderHistory() {
 function renderDetail(index) {
     const content = document.getElementById('detail-content');
     content.innerHTML = '';
-    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    const raw = localStorage.getItem('workouts') || localStorage.workouts;
+    let data = [];
+    try {
+        data = JSON.parse(raw) || [];
+    } catch(e) { data = []; }
     if (data[index]) {
         const wk = data[index];
         const date = document.createElement('h3');
@@ -260,7 +282,9 @@ function renderDetail(index) {
 }
 
 function getExerciseHistory(exerciseId) {
-    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    const raw = localStorage.getItem('workouts') || localStorage.workouts;
+    let data = [];
+    try { data = JSON.parse(raw) || []; } catch(e) { data = []; }
     let history = [];
     data.forEach(wk => {
         const ex = wk.exercises.find(e => e.id === exerciseId);
@@ -273,9 +297,11 @@ function getExerciseHistory(exerciseId) {
 
 // Home Dashboard logic
 function renderHome() {
-    // Last session summary
     const lastDiv = document.getElementById('last-session-content');
-    const data = JSON.parse(localStorage.getItem('workouts') || '[]');
+    const recentDiv = document.getElementById('recent-list');
+    const raw = localStorage.getItem('workouts') || localStorage.workouts;
+    let data = [];
+    try { data = JSON.parse(raw) || []; } catch(e) { data = []; }
     if (data.length === 0) {
         lastDiv.innerText = 'No sessions saved.';
     } else {
@@ -289,13 +315,10 @@ function renderHome() {
             });
         });
     }
-    // Recent workouts
-    const recentDiv = document.getElementById('recent-list');
     recentDiv.innerHTML = '';
     if (data.length === 0) {
         recentDiv.innerText = 'No recent workouts.';
     } else {
-        // show last 3
         const recent = data.slice(-3).reverse();
         recent.forEach(wk => {
             const item = document.createElement('div');
@@ -304,9 +327,7 @@ function renderHome() {
             recentDiv.appendChild(item);
         });
     }
-    // Stats placeholder
     document.getElementById('stats-content').innerText = 'Training stats coming soon.';
-    // Favourites placeholder
     document.getElementById('favourites-list').innerText = 'Favourite exercises feature TBD.';
 }
 
